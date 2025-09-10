@@ -1,4 +1,6 @@
 import express from 'express';
+import Idea from '../models/Idea.js';
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -6,17 +8,38 @@ const router = express.Router();
 // @description       get all ideas
 //@access             public
 
-router.get('/', (req, res) => {
-  const ideas = [
-    { id: 1, title: 'Idea 1', description: 'This is an Idea 1' },
-    { id: 2, title: 'Idea 2', description: 'This is an Idea 2' },
-    { id: 3, title: 'Idea 3', description: 'This is an Idea 3' },
-  ];
+router.get('/', async (req, res, next) => {
+  try {
+    const ideas = await Idea.find();
+    res.json(ideas);
+  } catch (err) {
+    console.log(err);
 
-  res.status(400);
-  throw new Error('Ok my bad sorry');
+    next(err);
+  }
+});
+// @route             GET  /api/ideas/:id
+// @description       get one idea
+//@access             public
 
-  res.json(ideas);
+router.get('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new Error('Idea not found');
+    }
+
+    const idea = await Idea.findById(req.params.id);
+    if (!idea) {
+      res.status(404);
+      throw new Error('Idea not found');
+    }
+    res.json(idea);
+  } catch (err) {
+    console.log(err);
+
+    next(err);
+  }
 });
 
 // @route             POST  /api/ideas
