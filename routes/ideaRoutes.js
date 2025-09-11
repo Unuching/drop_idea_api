@@ -46,11 +46,18 @@ router.get('/:id', async (req, res, next) => {
 // @description       create new idea
 //@access             public
 
-router.post('/', (req, res) => {
-  const { title, description } = req.body;
-  console.log(description);
+router.post('/', async (req, res, next) => {
+  try {
+    const { title, summary, description, tags } = req.body;
+    if (!title?.trim() || !summary?.trim() || !description?.trim()) {
+      res.status(400);
+      throw new Error('Title, summary and description required.');
+    }
+  } catch (err) {
+    console.log(err);
 
-  res.send(title);
+    next(err);
+  }
 });
 
 export default router;
