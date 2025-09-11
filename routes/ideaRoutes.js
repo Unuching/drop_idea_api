@@ -53,6 +53,23 @@ router.post('/', async (req, res, next) => {
       res.status(400);
       throw new Error('Title, summary and description required.');
     }
+
+    const newIdea = new Idea({
+      title,
+      summary,
+      description,
+      tags:
+        typeof tags === 'string'
+          ? tags
+              .split(',')
+              .map((tag) => tag.trim())
+              .filter(Boolean)
+          : Array.isArray(tags)
+          ? tags
+          : [],
+    });
+    const savedIdea = await newIdea.save();
+    res.status(201).json(savedIdea);
   } catch (err) {
     console.log(err);
 
