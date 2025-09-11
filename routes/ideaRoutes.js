@@ -29,7 +29,7 @@ router.get('/:id', async (req, res, next) => {
       throw new Error('Idea not found');
     }
 
-    const idea = await Idea.findById(req.params.id);
+    const idea = await Idea.findById(id);
     if (!idea) {
       res.status(404);
       throw new Error('Idea not found');
@@ -73,6 +73,65 @@ router.post('/', async (req, res, next) => {
   } catch (err) {
     console.log(err);
 
+    next(err);
+  }
+});
+
+// @route             DELETE  /api/ideas/:id
+// @description       delete idea
+//@access             public
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new Error('Idea not found');
+    }
+
+    const idea = await Idea.findByIdAndDelete(id);
+    if (!idea) {
+      res.status(404);
+      throw new Error('Idea not found');
+    }
+    res.json({ message: 'Idea deleted successfully' });
+  } catch (err) {
+    console.log(err);
+
+    next(err);
+  }
+});
+
+// @route             PUT  /api/ideas/:id
+// @description       update idea
+//@access             public
+router.put('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new Error('Idea not found');
+    }
+    const { title, summary, description, tags } = req.body;
+    if (!title?.trim() || !summary?.trim() || !description?.trim()) {
+      res.status(400);
+      throw new Error('Title, summary and description required.');
+    }
+    const updatedIdea = await Idea.findByIdAndUpdate(
+      id,
+      {
+        title,
+        summary,
+        description,
+        tags: Array.isArray(tags) ? tags : tags.split(',').map((t) => t.trim()),
+      },
+      { new: true, runValidators: true }
+    );
+    if (!updatedIdea) {
+      res.status(404);
+      throw new Error('Idea not found');
+    }
+    res.json(updatedIdea);
+  } catch (err) {
+    console.log(err);
     next(err);
   }
 });
