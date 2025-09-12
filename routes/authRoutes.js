@@ -50,6 +50,10 @@ router.post('/register', async (req, res, next) => {
     next(err);
   }
 });
+// @Routes                  POST api/auth/login
+// @description             authenticate user
+// @access                  public
+router.post();
 
 // @Routes                  POST api/auth/logout
 // @description             logout user and clear refresh token
