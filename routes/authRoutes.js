@@ -61,20 +61,44 @@ router.post('/login', async (req, res, next) => {
       throw new Error('Email and password required');
     }
     // find user
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email });
     if (!user) {
       res.status(401);
       throw new Error('Invalid credentials.');
     }
 
     //check if pasword matches
-    
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) {
+      res.status(401);
+      throw new Error('Invalid credentials.');
+    }
+    // create tokens
+    const payload = { useId: user._id.toString() };
+    const accessToken = await generateToken(payload, '1m');
+    const refreshToken = await generateToken(payload, '30d');
 
+    // set refresh token in http only cookie
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    });
 
+    res.status(201).json({
+      accessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.log(err);
 
-
-
-  } catch (err) {}
+    next(err);
+  }
 });
 
 // @Routes                  POST api/auth/logout
