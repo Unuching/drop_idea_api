@@ -53,7 +53,29 @@ router.post('/register', async (req, res, next) => {
 // @Routes                  POST api/auth/login
 // @description             authenticate user
 // @access                  public
-router.post();
+router.post('/login', async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      res.status(400);
+      throw new Error('Email and password required');
+    }
+    // find user
+    const user = User.findOne({ email });
+    if (!user) {
+      res.status(401);
+      throw new Error('Invalid credentials.');
+    }
+
+    //check if pasword matches
+    
+
+
+
+
+
+  } catch (err) {}
+});
 
 // @Routes                  POST api/auth/logout
 // @description             logout user and clear refresh token
