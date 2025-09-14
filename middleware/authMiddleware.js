@@ -2,7 +2,7 @@ import { jwtVerify } from 'jose';
 import dotenv from 'dotenv';
 dotenv.config();
 import User from '../models/User.js';
-import { JWT_SECRET } from '../utils/getJWTSecret.js';
+import { JWT_SECRET } from '../utils/getJwtSecret.js';
 
 export const protect = async (req, res, next) => {
   try {
@@ -17,9 +17,10 @@ export const protect = async (req, res, next) => {
     const { payload } = await jwtVerify(token, JWT_SECRET);
 
     const user = await User.findById(payload.userId).select('_id name email');
+
     if (!user) {
       res.status(401);
-      throw new Error('user not found');
+      throw new Error('User not found');
     }
 
     req.user = user;
@@ -27,6 +28,6 @@ export const protect = async (req, res, next) => {
   } catch (err) {
     console.error(err);
     res.status(401);
-    next(new Error('Not authorized, token failed'));
+    next(new Error('Not authorized unu, token failed'));
   }
 };

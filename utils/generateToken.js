@@ -1,5 +1,5 @@
 import { SignJWT } from 'jose';
-import { JWT_SECRET } from './getJWTSecret.js';
+import { JWT_SECRET } from './getJwtSecret.js';
 
 // generates a JWT token
 // @param {onject} payload -- Data to embed in token

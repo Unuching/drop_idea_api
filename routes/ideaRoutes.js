@@ -77,6 +77,7 @@ router.post('/', protect, async (req, res, next) => {
           : Array.isArray(tags)
           ? tags
           : [],
+      user: req.user.id,
     });
     const savedIdea = await newIdea.save();
     res.status(201).json(savedIdea);
