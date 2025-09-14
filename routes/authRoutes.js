@@ -116,4 +116,44 @@ router.post('/logout', (req, res) => {
   res.status(200).json({ message: 'Loggout out successfully' });
 });
 
+// @Routes                  POST api/auth/refresh
+// @description             Generate new access token from refresh token
+// @access                  public (need valid refresh token in cookie)
+
+router.post('/refresh', async (req, res, next) => {
+  try {
+    const token = req.cookies?.refreshToken;
+    console.log('Refreshing token ....');
+
+    if (!token) {
+      res.status(401);
+      throw new Error('No refresh token.');
+    }
+    const { payload } = await jwtVerify(token, JWT_SECRET);
+
+    const user = await User.findById(payload.useId);
+    if (!user) {
+      res.status(401);
+      throw new Error('No user.');
+    }
+
+    const newAccessToken = await generateToken(
+      { useId: user._id.toString() },
+      '1m'
+    );
+
+    res.json({
+      accessToken: newAccessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    res.status(401);
+    next(err);
+  }
+});
+
 export default router;
