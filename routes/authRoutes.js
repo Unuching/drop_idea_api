@@ -1,5 +1,7 @@
 import express from 'express';
 import User from '../models/User.js';
+import { jwtVerify } from 'jose';
+import { JWT_SECRET } from '../utils/getJWTSecret.js';
 import { generateToken } from '../utils/generateToken.js';
 
 const router = express.Router();
