@@ -1,6 +1,7 @@
 import express from 'express';
 import Idea from '../models/Idea.js';
 import mongoose from 'mongoose';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -55,7 +56,7 @@ router.get('/:id', async (req, res, next) => {
 // @description       create new idea
 //@access             public
 
-router.post('/', async (req, res, next) => {
+router.post('/', protect, async (req, res, next) => {
   try {
     const { title, summary, description, tags } = req.body || {};
     if (!title?.trim() || !summary?.trim() || !description?.trim()) {
@@ -90,7 +91,7 @@ router.post('/', async (req, res, next) => {
 // @description       delete idea
 //@access             public
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', protect, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -113,7 +114,7 @@ router.delete('/:id', async (req, res, next) => {
 // @route             PUT  /api/ideas/:id
 // @description       update idea
 //@access             public
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', protect, async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
