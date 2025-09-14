@@ -57,7 +57,7 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
   try {
-    const { title, summary, description, tags } = req.body;
+    const { title, summary, description, tags } = req.body || {};
     if (!title?.trim() || !summary?.trim() || !description?.trim()) {
       res.status(400);
       throw new Error('Title, summary and description required.');
@@ -119,7 +119,7 @@ router.put('/:id', async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new Error('Idea not found');
     }
-    const { title, summary, description, tags } = req.body;
+    const { title, summary, description, tags } = req.body || {};
     if (!title?.trim() || !summary?.trim() || !description?.trim()) {
       res.status(400);
       throw new Error('Title, summary and description required.');
